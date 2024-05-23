@@ -68,9 +68,9 @@ class Channel(
     /**
      * Explicit typing for [compositionLocalOn] function, event is [List<Message>]
      */
-    @Composable
-    fun compositionOnMessageCreateBulk(block: Event<List<Message>>.(List<Message>) -> Unit) =
-        compositionLocalOn("MESSAGE_CREATE_BULK", block)
+//    @Composable
+//    fun compositionOnMessageCreateBulk(block: Event<List<Message>>.(List<Message>) -> Unit) =
+//        compositionLocalOn("MESSAGE_CREATE_BULK", block)
 
     /**
      * Explicit typing for [emit] function, event is [Snowflake]
@@ -85,9 +85,9 @@ class Channel(
     /**
      * Explicit typing for [compositionLocalOn] function, event is [Snowflake]
      */
-    @Composable
-    fun compositionOnMessageDelete(block: Event<Snowflake>.(Snowflake) -> Unit) =
-        compositionLocalOn("MESSAGE_DELETE", block)
+//    @Composable
+//    fun compositionOnMessageDelete(block: Event<Snowflake>.(Snowflake) -> Unit) =
+//        compositionLocalOn("MESSAGE_DELETE", block)
 
 
     private fun addMessage(message: Message, isBulk: Boolean = false): Message {

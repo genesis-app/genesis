@@ -1,3 +1,6 @@
 {
-  "java.project.sourcePaths": [""]
+  "java.project.sourcePaths": [""],
+  "java.project.referencedLibraries": [
+    "/home/aenri/.gradle/caches/**/*.jar"
+  ]
 }

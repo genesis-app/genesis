@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="appDesktop-jvm-0.0.1-1705247358741#ginseng">
+    <output-path>$PROJECT_DIR$/appDesktop/build/libs</output-path>
+    <root id="archive" name="appDesktop-jvm-0.0.1-1705247358741#ginseng.jar" />
+  </artifact>
+</component>

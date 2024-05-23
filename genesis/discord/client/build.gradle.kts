@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
-    id("org.jetbrains.compose")
+//    id("org.jetbrains.compose")
     alias(libs.plugins.kotlinx.serialization)
     `maven-publish`
 }
@@ -26,10 +26,10 @@ kotlin {
                 implementation(libs.ktor.client.websockets)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.serialization.json)
-                compileOnly(compose.runtime)
-                compileOnly(compose.foundation)
+                compileOnly(libs.compose.runtime)
+                compileOnly(libs.compose.foundation)
 
-                compileOnly(libs.kamel)
+//                compileOnly(libs.kamel)
 
                 compileOnly(libs.koin.core)
                 compileOnly(libs.koin.compose)
@@ -38,8 +38,8 @@ kotlin {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation(project(":genesis:discord:api"))
-                implementation(libs.uninit.common)
-                implementation(libs.uninit.common.compose)
+                implementation(project(":uninit:common"))
+                implementation(project(":uninit:common-compose"))
 
             }
 

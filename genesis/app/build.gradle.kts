@@ -1,7 +1,8 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
-    id("org.jetbrains.compose")
+    alias(libs.plugins.kotlin.compose.compiler)
+//    alias(libs.plugins.kotlin.compose.plugin)
 //    id("dev.icerock.mobile.multiplatform-resources")
     alias(libs.plugins.kotlinx.serialization)
 }
@@ -21,15 +22,14 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.material)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.material)
+                implementation(libs.compose.components.resources)
 
-                api(libs.moko.resources.common)
-                api(libs.moko.resources.compose)
+//                api(libs.moko.resources.common)
+//                api(libs.moko.resources.compose)
 
                 implementation(libs.serialization.json)
 
@@ -49,11 +49,11 @@ kotlin {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-                implementation(libs.kamel)
+//                implementation(libs.kamel)
 
 
-                implementation(libs.uninit.common)
-                implementation(libs.uninit.common.compose)
+                implementation(project(":uninit:common"))
+                implementation(project(":uninit:common-compose"))
                 implementation(project(":genesis:discord:api"))
                 implementation(project(":genesis:discord:client"))
                 implementation(project(":genesis:genesisApi"))
@@ -67,12 +67,16 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.12.0")
                 implementation(libs.ktor.client.okhttp)
+
+                dependsOn(commonMain)
             }
         }
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
+                implementation(libs.compose.desktop.common)
                 implementation(libs.ktor.client.okhttp)
+
+                dependsOn(commonMain)
             }
         }
     }

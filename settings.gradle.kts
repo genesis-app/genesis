@@ -1,4 +1,4 @@
-rootProject.name = "uninit"
+rootProject.name = "uninit-genesis"
 pluginManagement {
     repositories {
         google()
@@ -33,3 +33,5 @@ include(":genesis:common")
 include(":genesis:genesisApi")
 // include(":genesis:nativeVoice") TODO: soon:tm:
 
+include(":uninit:common")
+include(":uninit:common-compose")

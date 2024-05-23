@@ -2,7 +2,7 @@
   <artifact type="jar" name="client-desktop-0.0.1">
     <output-path>$PROJECT_DIR$/genesis/discord/client/build/libs</output-path>
     <root id="archive" name="client-desktop-0.0.1.jar">
-      <element id="module-output" name="uninit.genesis.discord.client.desktopMain" />
+      <element id="module-output" name="uninit-genesis.genesis.discord.client.desktopMain" />
     </root>
   </artifact>
 </component>

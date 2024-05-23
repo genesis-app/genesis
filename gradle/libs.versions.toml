@@ -1,20 +1,22 @@
 [versions]
 uninit = "0.0.1-20231130-7d823d9"
-kotlin = "1.9.20"
-serialization = "1.6.1"
+kotlin = "2.0.0"
+serialization = "1.7.0-RC"
 android = "8.1.2"
-compose = "1.5.10"
-moko-resources = "0.23.0"
-koin = "3.5.2-RC1"
-koin-compose = "1.1.1-RC1"
-voyager = "1.0.0-rc10"
-ktor = "2.3.6"
-napier = "2.6.1"
+koin = "3.6.0-alpha1"
+koin-compose = "3.6.0-alpha1"
+voyager = "1.1.0-beta01"
+ktor = "2.3.11"
+napier = "2.7.1"
 gson = "2.10.1"
 kprefs = "0.12.1"
-kamel = "0.8.2"
+#kamel = "v1.0.0-beta.5"
+kotlinx = "1.8.1"
+compose = "1.6.10"
 
 [libraries]
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 
 uninit-common = { group = "uninit", name = "common", version.ref = "uninit" }
 uninit-common-compose = { group = "uninit", name = "common-compose", version.ref = "uninit" }
@@ -22,10 +24,6 @@ uninit-common-compose = { group = "uninit", name = "common-compose", version.ref
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
 serialization-preferences = { group = "net.edwardday.serialization", name = "kprefs", version.ref = "kprefs" }
-
-moko-resources-common = { group = "dev.icerock.moko", name = "resources", version.ref = "moko-resources" }
-moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
-moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -50,16 +48,35 @@ ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlin
 
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 
-kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
+#kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
+
+compose-animation = { group = "org.jetbrains.compose.animation", name = "animation", version.ref = "compose" }
+compose-animation-graphics = { group = "org.jetbrains.compose.animation", name = "animation-graphics", version.ref = "compose" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose" }
+compose-material = { group = "org.jetbrains.compose.material", name = "material", version.ref = "compose" }
+compose-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose" }
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "compose" }
+compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "compose" }
+
+compose-desktop-common = { group = "org.jetbrains.compose.desktop", name = "desktop", version.ref = "compose" }
+compose-desktop-jvm-linux-x64 = { group = "org.jetbrains.compose.desktop", name = "desktop-jvm-linux-x64", version.ref = "compose" }
+compose-desktop-jvm-macos-x64 = { group = "org.jetbrains.compose.desktop", name = "desktop-jvm-macos-x64", version.ref = "compose" }
+compose-desktop-jvm-windows-x64 = { group = "org.jetbrains.compose.desktop", name = "desktop-jvm-windows-x64", version.ref = "compose" }
+compose-desktop-jvm-linux-arm64 = { group = "org.jetbrains.compose.desktop", name = "desktop-jvm-linux-arm64", version.ref = "compose" }
+compose-desktop-jvm-macos-arm64 = { group = "org.jetbrains.compose.desktop", name = "desktop-jvm-macos-arm64", version.ref = "compose" }
+
+compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "compose" }
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-compose-plugin = { id = "org.jetbrains.compose", version.ref = "compose" }
 android-library = { id = "com.android.library", version.ref = "android" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
-moko-resources-multiplatform = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 
 [bundles]
 
