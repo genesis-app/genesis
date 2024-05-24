@@ -22,12 +22,12 @@ jobs:
           cache: "gradle"
 
       # holy shit thats alot of caching
-      - name: Cache appAndroid
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/cache@v3
-        with:
-          path: appAndroid/build
-          key: ${{ runner.os }}-appAndroid-${{ hashFiles('appAndroid/**', 'build.gradle.kts', 'gradle.properties', 'gradle/libs.versions.toml') }}
+#      - name: Cache appAndroid
+#        if: matrix.os == 'ubuntu-latest'
+#        uses: actions/cache@v3
+#        with:
+#          path: appAndroid/build
+#          key: ${{ runner.os }}-appAndroid-${{ hashFiles('appAndroid/**', 'build.gradle.kts', 'gradle.properties', 'gradle/libs.versions.toml') }}
       - name: Cache appDesktop
         uses: actions/cache@v3
         with:
