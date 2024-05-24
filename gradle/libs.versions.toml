@@ -10,7 +10,6 @@ ktor = "2.3.11"
 napier = "2.7.1"
 gson = "2.10.1"
 kprefs = "0.12.1"
-#kamel = "v1.0.0-beta.5"
 kotlinx = "1.8.1"
 compose = "1.6.10"
 cryptography = "0.3.1"
@@ -24,8 +23,6 @@ crypto-provider-apple = { group = "dev.whyoleg.cryptography", name = "cryptograp
 
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 
-uninit-common = { group = "uninit", name = "common", version.ref = "uninit" }
-uninit-common-compose = { group = "uninit", name = "common-compose", version.ref = "uninit" }
 
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
