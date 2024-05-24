@@ -13,8 +13,14 @@ kprefs = "0.12.1"
 #kamel = "v1.0.0-beta.5"
 kotlinx = "1.8.1"
 compose = "1.6.10"
+cryptography = "0.3.1"
 
 [libraries]
+
+crypto-core = { group = "dev.whyoleg.cryptography", name = "cryptography-core", version.ref = "cryptography" }
+crypto-provider-jvm = { group = "dev.whyoleg.cryptography", name = "cryptography-provider-jdk", version.ref = "cryptography" }
+crypto-provider-apple = { group = "dev.whyoleg.cryptography", name = "cryptography-provider-apple", version.ref = "cryptography" }
+
 
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 

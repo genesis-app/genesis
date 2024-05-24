@@ -12,7 +12,7 @@ actual fun platformNativeModuleImpl() = module {
     single {
         PreferencesManager(".genesis.json")
     }
-    single {
+    single<HttpClientEngineFactory<*>> {
         OkHttp
     }
 }

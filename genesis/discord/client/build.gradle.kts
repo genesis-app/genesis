@@ -41,6 +41,7 @@ kotlin {
                 implementation(project(":uninit:common"))
                 implementation(project(":uninit:common-compose"))
 
+                implementation(libs.crypto.core)
             }
 
             resources.srcDirs("resources")
@@ -48,13 +49,20 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.crypto.provider.jvm)
             }
         }
         val desktopMain by getting {
             dependencies {
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.crypto.provider.jvm)
             }
         }
+//        val iosMain by getting {
+//            dependencies {
+//                implementation(libs.crypto.provider.apple)
+//            }
+//        }
     }
 }
 
