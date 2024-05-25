@@ -27,6 +27,11 @@ kotlin {
                 compileOnly(libs.ktor.client.core)
                 compileOnly(libs.ktor.client.negotiation)
 
+                compileOnly(libs.coil)
+                compileOnly(libs.coil.svg)
+                compileOnly(libs.coil.compose)
+                compileOnly(libs.coil.network.core)
+
                 // These have to be implementation or else gradle will pitch a fit
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)

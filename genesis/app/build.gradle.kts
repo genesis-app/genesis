@@ -47,8 +47,14 @@ kotlin {
 
                 implementation(libs.napier)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation(libs.qr)
 
+                implementation(libs.coil)
+                implementation(libs.coil.svg)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 //                implementation(libs.kamel)
 
 

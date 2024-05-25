@@ -9,11 +9,14 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
@@ -26,6 +29,8 @@ import uninit.common.fytix.Some
 import uninit.genesis.discord.client.GenesisClient
 import uninit.genesis.discord.client.enum.LogLevel
 import uninit.genesis.discord.client.gateway.auth.*
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * GatewayQRLoginClient is a client for handling the QR login process.
@@ -58,12 +63,19 @@ class GatewayQRLoginClient(
             }
             sanitizeHeader { header -> header == HttpHeaders.Authorization }
         }
+        install(ContentNegotiation) {
+            json(json)
+        }
     }
     private val rsa: RSA.OAEP.KeyPair =
         CryptographyProvider.Default
             .get(RSA.OAEP)
-            .keyPairGenerator(rsaWidth.bits)
+            .keyPairGenerator(
+                rsaWidth.bits,
+                digest = SHA256
+            )
             .generateKeyBlocking()
+
     private val hasher: Hasher =
         CryptographyProvider.Default
             .get(SHA256)
@@ -85,6 +97,7 @@ class GatewayQRLoginClient(
     val String.trimRightEquals: String
         get() = this.trimEnd { it == '=' }
 
+    @OptIn(ExperimentalEncodingApi::class)
     fun connect() {
         if (websocket != null && websocket?.isActive == true) return
 
@@ -130,37 +143,43 @@ class GatewayQRLoginClient(
                                 "hello" -> {
                                     Napier.v("Hello packet received: $packet")
                                     // setup heartbeat, send encoded public key
+                                    if (heartbeat.isActive) {
+                                        Napier.w("Cancelling and Overriding old Heartbeat job")
+                                        heartbeat.cancel()
+                                    }
                                     heartbeat = scope.launch {
                                         while (true) {
-                                            if (isActive) send(
-                                                Frame.Text(
-                                                    json.encodeToString(
-                                                        GatewayQRAuthEvent.heartbeat()
+                                            delay(packet.heartbeat_interval!!.toLong())
+                                            if (isActive) {
+                                                Napier.v("Sending heartbeat")
+                                                send(
+                                                    Frame.Text(
+                                                        json.encodeToString(
+                                                            GatewayQRAuthEvent.heartbeat()
+                                                        )
                                                     )
                                                 )
-                                            ) else {
+                                            } else {
                                                 break
                                             }
-                                            delay(packet.heartbeat_interval!!.toLong())
                                         }
                                     }
                                     val pubKey = rsa
                                         .publicKey
                                         .encodeTo(RSA.PublicKey.Format.PEM)
                                         .decodeToString()
-                                    Napier.v("Sending public key: $pubKey")
+//                                    Napier.v("Sending public key: $pubKey")
 
                                     val packetRes = json.encodeToString(
                                         GatewayQRAuthEvent.init(
-                                            pubKey.split('\n').let {
-                                                it.subList(1, it.size - 2).joinToString("")
-                                            }
+                                            pubKey
+                                                .split('\n').let {
+                                                    it.subList(1, it.size - 2).joinToString("")
+                                                }
                                         )
                                     )
                                     Napier.v("Sending init packet with public key: $packetRes")
                                     send(Frame.Text(packetRes))
-                                    Napier.v("Sent init packet.")
-                                    continue
                                 }
                                 "nonce_proof" -> {
                                     Napier.v("Received nonce proof: ${packet.encrypted_nonce!!}")
@@ -171,12 +190,13 @@ class GatewayQRLoginClient(
                                             packet.encrypted_nonce!!.decodeBase64Bytes()
                                         )
                                     val proofBytes = hasher.hash(decrypted_nonce)
-                                    val proof = proofBytes.encodeBase64().trimRightEquals
+                                    val proof = json.encodeToString(
+                                        GatewayQRAuthEvent.nonceProof(
+                                    Base64.UrlSafe.encode(proofBytes).trimRightEquals))
+//                                    Napier.v("waiting 500MS")
+//                                    delay(500L)
                                     Napier.v("Sending nonce proof: $proof")
-                                    send(Frame.Text(json.encodeToString(
-                                        GatewayQRAuthEvent.nonceProof(proof)
-                                    )))
-                                    continue
+                                    send(Frame.Text(proof))
                                 }
                                 "pending_remote_init" -> {
                                     Napier.v("Received fingerprint: ${packet.fingerprint}")
@@ -199,7 +219,6 @@ class GatewayQRLoginClient(
                                         userAvatarUri = "https://cdn.discordapp.com/avatars/${items[0]}/${items[2]}.png",
                                         userName = items[3]
                                     ))
-                                    continue
                                 }
                                 "pending_login" -> {
                                     // emit loading "Exchanging ticket..."
@@ -211,11 +230,9 @@ class GatewayQRLoginClient(
                                 }
                                 "heartbeat_ack" -> {
                                     Napier.v("Heartbeat ack received.")
-                                    continue
                                 }
                                 else -> {
                                     Napier.v("Unknown packet ${packet.op}: $packet")
-                                    continue
                                 }
                             }
                         } catch (e: Exception) {
@@ -238,7 +255,10 @@ class GatewayQRLoginClient(
             setBody(QRAuthTicketExchangeRequest(ticket))
             contentType(ContentType.parse("application/json"))
         }
-        val encryptedToken = res.body<QRAuthTicketExchangeResponse>().encrypted_token
+        Napier.v("Exchange response: ${res.status.value}")
+        val text = res.bodyAsText()
+        Napier.v("Exchange response: $text")
+        val encryptedToken = json.decodeFromString<QRAuthTicketExchangeResponse>(text).encrypted_token
         return rsa
             .privateKey
             .decryptor()

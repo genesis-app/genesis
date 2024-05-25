@@ -18,3 +18,4 @@ build
 xcuserdata
 /smali
 /appDesktop/.genesis.json
+/.idea/artifacts/

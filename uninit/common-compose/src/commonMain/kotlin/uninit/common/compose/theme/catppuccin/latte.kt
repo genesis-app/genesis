@@ -1,0 +1,16 @@
+package uninit.common.compose.theme.catppuccin
+
+val CatppuccinLatteLavender by catppuccin("Latte", "Lavender")
+val CatppuccinLatteBlue by catppuccin("Latte", "Blue")
+val CatppuccinLatteSapphire by catppuccin("Latte", "Sapphire")
+val CatppuccinLatteSky by catppuccin("Latte", "Sky")
+val CatppuccinLatteTeal by catppuccin("Latte", "Teal")
+val CatppuccinLatteGreen by catppuccin("Latte", "Green")
+val CatppuccinLatteYellow by catppuccin("Latte", "Yellow")
+val CatppuccinLattePeach by catppuccin("Latte", "Peach")
+val CatppuccinLatteMaroon by catppuccin("Latte", "Maroon")
+val CatppuccinLatteRed by catppuccin("Latte", "Red")
+val CatppuccinLatteMauve by catppuccin("Latte", "Mauve")
+val CatppuccinLattePink by catppuccin("Latte", "Pink")
+val CatppuccinLatteFlamingo by catppuccin("Latte", "Flamingo")
+val CatppuccinLatteRosewater by catppuccin("Latte", "Rosewater")

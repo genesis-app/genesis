@@ -24,7 +24,8 @@ kotlin {
                 implementation(libs.ktor.client.negotiation)
                 implementation(libs.ktor.serialization.json)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation(libs.kotlinx.coroutines.core)
+
                 implementation(project(":uninit:common"))
 
             }
@@ -32,11 +33,14 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.kotlinx.coroutines.android)
             }
         }
         val desktopMain by getting {
             dependencies {
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.kotlinx.coroutines.jvm)
+
             }
         }
     }
