@@ -15,6 +15,7 @@ compose = "1.6.10"
 cryptography = "0.3.1"
 qr-code = "4.1.1"
 coil = "3.0.0-alpha06"
+webview = "1.9.8"
 [libraries]
 
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
@@ -82,6 +83,7 @@ compose-desktop-jvm-macos-arm64 = { group = "org.jetbrains.compose.desktop", nam
 
 compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "compose" }
 
+compose-thirdparty-webview = { group = "io.github.kevinnzou", name = "compose-webview-multiplatform", version.ref = "webview" }
 
 
 [plugins]

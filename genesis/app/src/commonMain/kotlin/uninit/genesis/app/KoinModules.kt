@@ -1,10 +1,19 @@
 package uninit.genesis.app
 
 import androidx.compose.runtime.Composable
+import org.koin.dsl.module
+import uninit.common.compose.fytix.ComposableEventBus
 
 object KoinModules {
     @Composable
     fun platformNativeModule() = platformNativeModuleImpl()
+
+    @Composable
+    fun globalEmitterModule() = module {
+        single {
+            ComposableEventBus("GenesisGlobalEventBus")
+        }
+    }
 }
 
 /** PlatformNativeModule is a koin module that provides the following

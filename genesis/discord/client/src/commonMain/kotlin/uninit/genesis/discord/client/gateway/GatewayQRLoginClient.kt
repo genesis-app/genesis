@@ -275,6 +275,6 @@ class GatewayQRLoginClient(
     fun onFingerprintAvailable(block: Event<GatewayQRAuthFingerprintAvailableEvent>.(GatewayQRAuthFingerprintAvailableEvent) -> Unit) =
         on("fingerprint", block)
 
-    fun onceToken(block: Event<GatewayQRAuthTokenEvent>.(GatewayQRAuthTokenEvent) -> Unit) =
-        once("token", block)
+    fun onToken(block: Event<GatewayQRAuthTokenEvent>.(GatewayQRAuthTokenEvent) -> Unit) =
+        on("token", block)
 }

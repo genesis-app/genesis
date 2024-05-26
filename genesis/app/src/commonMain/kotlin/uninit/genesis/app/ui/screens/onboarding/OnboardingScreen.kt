@@ -1,17 +1,26 @@
 package uninit.genesis.app.ui.screens.onboarding
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -30,16 +39,23 @@ import org.jetbrains.skia.Image
 import org.koin.compose.getKoin
 import qrcode.QRCode
 import qrcode.color.Colors
+import uninit.common.compose.components.ApplicationText
+import uninit.common.compose.components.ApplicationTextButton
+import uninit.common.compose.fytix.ComposableEventBus
 import uninit.common.compose.theme.LocalApplicationTheme
 import uninit.genesis.discord.client.GenesisClient
 import uninit.genesis.discord.client.gateway.GatewayQRLoginClient
 import uninit.genesis.discord.client.gateway.auth.GatewayQRAuthAwaitingApprovalEvent
 
 class OnboardingScreen : Screen {
+    private val emitter by lazy {
+        ComposableEventBus("OnboardingScreen")
+    }
     @Composable
     override fun Content() {
         val theme = LocalApplicationTheme.current
-//        val windowSize = currentWindowAdaptiveInfo().windowSizeClass
+        var token: String? by remember { mutableStateOf(null) }
+        emitter.compositionLocalOn("token") { token = it }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -47,18 +63,53 @@ class OnboardingScreen : Screen {
             contentAlignment = Alignment.Center
 
         ) {
-            OnboardingQRLoginPage()
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(0.8f)
+                    .background(
+                        theme.secondaryPanes[0],
+                        RoundedCornerShape(10.dp)
+                    )
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedVisibility(
+                    visible = token == null,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(1f),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        StandardLoginPanel()
+                        OnboardingQRLoginPanel()
+                    }
+                }
+                AnimatedVisibility(
+                    visible = token != null,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    LoadingScreen("Logging in...")
+                }
+            }
         }
     }
 
     @Composable
-    fun OnboardingQRLoginPage() {
+    fun OnboardingQRLoginPanel() {
         var state by remember { mutableStateOf(QRLoginState.AwaitingQRCode) }
         var qrLink by remember { mutableStateOf("") }
         var token by remember { mutableStateOf("") }
         var partialUser: GatewayQRAuthAwaitingApprovalEvent? by remember { mutableStateOf(null) }
-
         val qrAuthClient = GatewayQRLoginClient(getKoin().get())
+
+        var top: @Composable (Modifier) -> Unit by remember { mutableStateOf({}) }
+        var middle: @Composable (Modifier) -> Unit by remember { mutableStateOf({}) }
+        var bottom: @Composable (Modifier) -> Unit by remember { mutableStateOf({}) }
+
         qrAuthClient.onAwaitingApproval {
             Napier.v("AwaitingApproval: $it")
             state = QRLoginState.AwaitingApproval
@@ -71,7 +122,7 @@ class OnboardingScreen : Screen {
             else
                 state = QRLoginState.AwaitingQRCode
         }
-        qrAuthClient.onceToken {
+        qrAuthClient.onToken {
             Napier.v("Token: $it")
             state = QRLoginState.TokenReceived
             token = it.token
@@ -87,25 +138,69 @@ class OnboardingScreen : Screen {
         LaunchedEffect(Unit) {
             qrAuthClient.connect()
         }
-        Column(
-            modifier = Modifier.fillMaxSize(0.7f).padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        when (state) {
+            QRLoginState.AwaitingQRCode -> {
+                top = { ApplicationText("Loading QR code!", modifier = it) }
+                middle = { Box(modifier = it) {} }
+                bottom = { ApplicationText("Connecting to discord...", modifier = it) }
+            }
+            QRLoginState.AwaitingScan -> {
+                top = { Box(modifier = it) {} }
+                middle = { QRCode(qrLink, modifier = it) }
+                bottom = { ApplicationText("Scan the QR code with your Discord app!", modifier = it) }
+            }
+            QRLoginState.AwaitingApproval,
+            QRLoginState.ExchangingTicket,
+            QRLoginState.TokenReceived -> {
+                top = { modifier ->
+                    partialUser?.let {
+                        ApplicationText("Welcome back,  ${it.userName}!", modifier = modifier)
+                    }
+                }
+                middle = { modifier ->
+                    Box(
+                        modifier = modifier
+                            .fillMaxSize(0.7f)
+                            .aspectRatio(1f)
+                            .clip(CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        partialUser?.let {
+                            Image(
+                                painter = rememberAsyncImagePainter(it.userAvatarUri),
+                                contentDescription = "User Avatar",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } ?: CircularProgressIndicator(modifier)
+                    }
+                }
+                bottom = {
+                    when (state) {
+                        QRLoginState.AwaitingApproval -> ApplicationText("Please approve the login request on your device.", modifier = it)
+                        QRLoginState.ExchangingTicket -> ApplicationText("Confirming with Discord...", modifier = it)
+                        QRLoginState.TokenReceived -> ApplicationText("Logging in...", modifier = it)
+                        else -> {}
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .background(
+                    LocalApplicationTheme.current.secondaryPanes[1],
+                    RoundedCornerShape(10.dp)
+                )
+                .fillMaxHeight()
+                .padding(12.dp)
         ) {
-            when (state) {
-                QRLoginState.AwaitingQRCode -> {
-                    LoadingScreen("Loading QR Login...")
-                }
-                QRLoginState.AwaitingScan -> {
-                    QRCode(qrLink)
-                }
-                QRLoginState.AwaitingApproval,
-                QRLoginState.ExchangingTicket -> {
-                    partialUser?.let { UserPartialInfo(it, state == QRLoginState.AwaitingApproval) }
-                    if (state == QRLoginState.ExchangingTicket) LoadingScreen("Exchanging ticket...")
-                }
-                QRLoginState.TokenReceived -> {
-                    TestTokenReceived(token)
-                }
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Box(modifier = Modifier.weight(0.1f).fillMaxHeight()) {top(Modifier)}
+                Box(modifier = Modifier.weight(0.6f).fillMaxHeight()) {middle(Modifier)}
+                Box(modifier = Modifier.weight(0.3f).fillMaxHeight()) {bottom(Modifier)}
             }
         }
     }
@@ -122,7 +217,7 @@ class OnboardingScreen : Screen {
 
     }
     @Composable
-    fun QRCode(link: String) {
+    fun QRCode(link: String, modifier: Modifier = Modifier) {
         Napier.v("QRCode: $link")
         var qr by remember<MutableState<ByteArray?>> { mutableStateOf(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -155,92 +250,84 @@ class OnboardingScreen : Screen {
                 }
             }
             qr?.let {
-                AsyncImage(it, "QR Code")
+                AsyncImage(it, "QR Code", modifier = modifier)
             }
         }
     }
 
-
-    @Composable
-    fun UserPartialInfo(
-        partialUser: GatewayQRAuthAwaitingApprovalEvent,
-        sayApprove: Boolean
-    ) {
-        Napier.v("UserPartialInfo: $partialUser")
-        val painter = rememberAsyncImagePainter(partialUser.userAvatarUri)
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            ThemedText("Welcome Back, ${partialUser.userName}!")
-                when (painter.state) {
-                    is AsyncImagePainter.State.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(100.dp),
-                            color = LocalApplicationTheme.current.accent
-                        )
-                    }
-                    is AsyncImagePainter.State.Error -> {
-                        ThemedText("Error loading avatar")
-                    }
-                    is AsyncImagePainter.State.Success -> {
-                        Image(
-                            painter = painter,
-                            contentDescription = "User Avatar",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(
-                                    RoundedCornerShape(50.dp)
-                                )
-                        )
-                    }
-
-                    AsyncImagePainter.State.Empty -> TODO()
-                }
-            if (sayApprove) ThemedText("Please approve the login request on your device.")
-        }
+    //#region Username/Password or Token authentication
+    enum class AuthMethod {
+        UsernamePassword,
+        Token
     }
-
     @Composable
-    fun TestTokenReceived(token: String) {
-        val httpClientEngineFactory = getKoin().get<HttpClientEngineFactory<*>>()
-        val messages by remember { mutableStateOf(mutableListOf<String>()) }
+    fun StandardLoginPanel() {
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier.fillMaxSize(0.5f).padding(16.dp).background(LocalApplicationTheme.current.secondaryPanes[0]),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ThemedText("Token Received, testing...")
-            messages.forEach {
-                ThemedText(it)
+            var authMethod = remember { mutableStateOf(AuthMethod.UsernamePassword) }
+            LoginMethodSelector(authMethod)
+            when (authMethod.value) {
+                AuthMethod.UsernamePassword -> UsernamePasswordLogin()
+                AuthMethod.Token -> TokenLogin()
             }
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            val client = GenesisClient(httpClientEngineFactory)
-            val res = client.tryTokenLogin(token)
-            res.map {
-                messages.add("Logged in as ${it.username}")
-            }.mapError {
-                messages.add("Error: $it")
-            }
+
         }
     }
-
     @Composable
-    fun ThemedText(text: String) {
-        Text(text, color = LocalApplicationTheme.current.body)
+    fun LoginMethodSelector(
+        state: MutableState<AuthMethod>
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(1f),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            ApplicationTextButton("Email or SMS", modifier = Modifier.weight(0.6f)) {
+                state.value = AuthMethod.UsernamePassword
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            ApplicationTextButton("Token", modifier = Modifier.weight(0.4f)) {
+                state.value = AuthMethod.Token
+            }
+        }
     }
+    @Composable
+    fun UsernamePasswordLogin() {
+        var username by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        Column {
+//            TextField(username, { username = it })
+//            TextField(password, { password = it })
+            Row(
+                modifier = Modifier.fillMaxWidth(1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                ApplicationTextButton("Login", modifier = Modifier.fillMaxWidth(0.5f)) {
+                    Napier.v("Logging in with username/password")
+                }
+            }
 
-
+        }
+    }
+    @Composable
+    fun TokenLogin() {
+        var token by remember { mutableStateOf("") }
+        Column {
+//            TextField(token, { token = it })
+            Row(
+                modifier = Modifier.fillMaxWidth(1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                ApplicationTextButton("Login with Token", modifier = Modifier.fillMaxWidth(0.5f)) {
+                    Napier.v("Logging in with token")
+                }
+            }
+        }
+    }
+    //#endregion
 }
 
-private fun Bitmap.Companion.decodeByteArray(it: ByteArray): Bitmap {
-    val bitmap = Bitmap()
-    val image = Image.makeFromEncoded(it)
-    bitmap.setImageInfo(image.imageInfo)
-    image.readPixels(dst = bitmap)
-    return bitmap
-}
 
 enum class QRLoginState {
     AwaitingQRCode,

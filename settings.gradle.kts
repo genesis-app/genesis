@@ -16,6 +16,8 @@ dependencyResolutionManagement {
         maven("https://repo.uninit.dev/snapshots")
         maven("https://repo.uninit.dev/releases")
         maven("https://repo.uninit.dev/local")
+        // required for compose.thirdparty.webview on desktop
+        maven("https://jogamp.org/deployment/maven")
 
     }
 }
@@ -35,3 +37,4 @@ include(":genesis:genesisApi")
 
 include(":uninit:common")
 include(":uninit:common-compose")
+include(":uninit:consumable")

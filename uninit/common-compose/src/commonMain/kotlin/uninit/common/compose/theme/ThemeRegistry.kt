@@ -131,3 +131,5 @@ sealed class ThemeRegistry {
         }
     }
 }
+
+expect fun ThemeRegistry.appendPlatformBuiltins()

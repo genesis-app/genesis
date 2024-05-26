@@ -1,18 +1,19 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
     `maven-publish`
 }
 
 kotlin {
+
     androidTarget {
         publishLibraryVariants("release")
     }
     jvm("desktop")
     iosArm64().binaries.framework {
-        baseName = "uninitCommonCompose"
+        baseName = "uninitConsumable"
     }
 
     sourceSets {
@@ -20,29 +21,14 @@ kotlin {
             dependencies {
                 implementation(libs.serialization.json)
                 implementation(libs.kotlinx.coroutines.core)
-
-                api(libs.compose.runtime)
-                api(libs.compose.foundation)
-                api(libs.compose.material3)
-
-                api(libs.ktor.client.core)
-                api(libs.ktor.client.negotiation)
-
-                api(libs.coil)
-                api(libs.coil.svg)
-                api(libs.coil.compose)
-                api(libs.coil.network.core)
-
-                // These have to be implementation or else gradle will pitch a fit
-                api(libs.koin.core)
-                api(libs.koin.compose)
-
-                api(project(":uninit:common"))
-
-                api(libs.compose.thirdparty.webview)
-
             }
             resources.srcDirs("resources")
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
 
         val androidMain by getting {}
@@ -56,7 +42,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "uninit.common.compose"
+    namespace = "uninit.common"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -73,16 +59,21 @@ android {
         jvmToolchain(17)
     }
 }
+
 publishing {
     @Suppress("UNCHECKED_CAST")
     (extra["maven-repository"] as (PublishingExtension.() -> Unit)?)?.invoke(this)
 
     publications {
-        create<MavenPublication>("uninit.common.compose") {
+        create<MavenPublication>("uninit.consumable") {
             groupId = "uninit"
-            artifactId = "common-compose"
+            artifactId = "consumable"
             version = project.version.toString()
             from(components["kotlin"])
         }
     }
 }
+
+
+
+true
