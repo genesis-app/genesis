@@ -1,4 +1,4 @@
-package uninit.common.compose.theme
+package uninit.ui.theme
 
 import androidx.compose.runtime.compositionLocalOf
 

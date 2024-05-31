@@ -1,4 +1,4 @@
-package uninit.common.compose.theme
+package uninit.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import uninit.common.color.RGBA

@@ -88,6 +88,7 @@ compose-thirdparty-webview = { group = "io.github.kevinnzou", name = "compose-we
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-compose-plugin = { id = "org.jetbrains.compose", version.ref = "compose" }

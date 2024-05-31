@@ -1,6 +1,7 @@
-package uninit.common.compose.theme
+package uninit.ui.theme
 
 import uninit.common.compose.theme.catppuccin.*
+import uninit.ui.theme.catppuccin.*
 
 sealed class ThemeRegistry {
     private val map: MutableMap<String, ApplicationTheme> = mutableMapOf()
@@ -128,6 +129,7 @@ sealed class ThemeRegistry {
     companion object : ThemeRegistry() {
         init {
             insertBuiltins()
+            appendPlatformBuiltins()
         }
     }
 }

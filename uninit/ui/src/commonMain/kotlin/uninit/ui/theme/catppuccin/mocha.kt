@@ -1,4 +1,4 @@
-package uninit.common.compose.theme.catppuccin
+package uninit.ui.theme.catppuccin
 
 val CatppuccinMochaLavender by catppuccin("Mocha", "Lavender")
 val CatppuccinMochaBlue by catppuccin("Mocha", "Blue")

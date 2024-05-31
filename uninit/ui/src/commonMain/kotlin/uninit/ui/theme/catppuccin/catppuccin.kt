@@ -1,10 +1,10 @@
-package uninit.common.compose.theme.catppuccin
+package uninit.ui.theme.catppuccin
 
 import uninit.common.collections.three
 import uninit.common.collections.two
 import uninit.common.color.pallete.Catppuccin
-import uninit.common.compose.theme.ApplicationTheme
-import uninit.common.compose.theme.color
+import uninit.ui.theme.ApplicationTheme
+import uninit.ui.theme.color
 
 internal fun catppuccin(flavor: String, variant: String? = null) = lazy {
     val flavor = when (flavor.lowercase()) {

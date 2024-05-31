@@ -1,4 +1,4 @@
-package uninit.common.compose.theme
+package uninit.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.*
@@ -10,7 +10,7 @@ import kotlinx.serialization.descriptors.nullable
 import kotlinx.serialization.encoding.*
 import uninit.common.collections.Three
 import uninit.common.collections.Two
-import uninit.common.compose.theme.catppuccin.CatppuccinMochaPink
+import uninit.ui.theme.catppuccin.CatppuccinMochaPink
 
 /**
  * Loosely based off of the Catppucin Style Guide
