@@ -1,26 +1,29 @@
 package uninit.common.color
 
-import uninit.common.Quad
+import uninit.common.collections.Four
+import uninit.common.collections.four
 
 class RGBA(
     val r: Int,
     val g: Int,
     val b: Int,
     val a: Int = 255,
-) : Quad<Int, Int, Int, Int>(r, g, b, a){
+){
     init {
         require(r in 0..255)
         require(g in 0..255)
         require(b in 0..255)
         require(a in 0..255)
     }
+
     override fun toString(): String = "RGBA($r, $g, $b, $a)"
-    fun toFloat(): Quad<Float, Float, Float, Float> = Quad(
-        r / 255f,
-        g / 255f,
-        b / 255f,
-        a / 255f,
-    )
+    fun toFloat(): Four<Float> =
+        arrayOf(
+            r / 255f,
+            g / 255f,
+            b / 255f,
+            a / 255f
+        ).four
     companion object {
         fun hex(it: String): RGBA {
             require(it.length in 6..9)

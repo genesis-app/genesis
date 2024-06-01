@@ -60,9 +60,9 @@ kotlin {
 
                 implementation(project(":uninit:common"))
                 implementation(project(":uninit:common-compose"))
+                implementation(project(":uninit:ui"))
                 implementation(project(":genesis:discord:api"))
                 implementation(project(":genesis:discord:client"))
-                implementation(project(":genesis:genesisApi"))
 
             }
 
